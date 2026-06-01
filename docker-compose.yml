@@ -1,9 +1,9 @@
 services:
-  3xui:
+  terousd-ui:
     build:
       context: .
       dockerfile: ./Dockerfile
-    container_name: 3xui_app
+    container_name: terousd_ui
     # hostname: yourhostname <- optional
     volumes:
       - $PWD/db/:/etc/x-ui/
@@ -23,7 +23,7 @@ services:
 
   postgres:
     image: postgres:16-alpine
-    container_name: 3xui_postgres
+    container_name: terousd_ui_postgres
     profiles: ["postgres"]
     environment:
       POSTGRES_USER: xui

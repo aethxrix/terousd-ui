@@ -39,8 +39,8 @@ this source tree, then publish a version tag:
 ```bash
 git remote set-url origin https://github.com/aethxrix/terousd-ui.git
 git push -u origin main
-git tag v3.2.2
-git push origin v3.2.2
+git tag v3.2.3
+git push origin v3.2.3
 ```
 
 GitHub Actions builds the release assets. Once the release completes, the
@@ -66,8 +66,7 @@ systemctl restart x-ui
 docker compose up -d
 ```
 
-The release workflow publishes `aethxrix/terousd-ui` and
-`ghcr.io/aethxrix/terousd-ui`.
+The release workflow publishes `ghcr.io/aethxrix/terousd-ui`.
 
 ## License And Credit
 
