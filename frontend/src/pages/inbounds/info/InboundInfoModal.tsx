@@ -33,7 +33,6 @@ export default function InboundInfoModal({
   remarkModel = '-io',
   expireDiff = 0,
   trafficDiff = 0,
-  ipLimitEnable = false,
   tgBotEnable = false,
   nodeAddress = '',
   subSettings,
@@ -162,7 +161,7 @@ export default function InboundInfoModal({
     setClientIpsArray([]);
     setClientIpsText('');
 
-    if (ipLimitEnable && (clientSet?.limitIp ?? 0) > 0 && stats?.email) {
+    if (stats?.email) {
       void HttpUtil.post(`/panel/api/clients/ips/${stats.email}`).then((msg) => {
         if (!msg?.success) {
           setClientIpsText((msg?.obj as string) || 'No IP record');
@@ -188,7 +187,7 @@ export default function InboundInfoModal({
         }
       });
     }
-  }, [open, dbInbound, clientIndex, remarkModel, nodeAddress, subSettings, ipLimitEnable, t]);
+  }, [open, dbInbound, clientIndex, remarkModel, nodeAddress, subSettings, t]);
 
   const isEnable = useMemo(() => {
     if (clientSettings) return !!clientSettings.enable;
@@ -315,10 +314,8 @@ export default function InboundInfoModal({
           {clientSettings?.comment && (
             <tr><td>{t('comment')}</td><td><Tag className="info-large-tag">{clientSettings.comment}</Tag></td></tr>
           )}
-          {ipLimitEnable && (
-            <tr><td>{t('pages.inbounds.IPLimit')}</td><td><Tag>{clientSettings?.limitIp ?? 0}</Tag></td></tr>
-          )}
-          {ipLimitEnable && (clientSettings?.limitIp ?? 0) > 0 && (
+          <tr><td>{t('pages.inbounds.IPLimit')}</td><td><Tag>{clientSettings?.limitIp ?? 0}</Tag></td></tr>
+          {clientSettings && (
             <tr>
               <td>{t('pages.inbounds.IPLimitlog')}</td>
               <td>

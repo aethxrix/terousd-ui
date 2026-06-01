@@ -152,7 +152,7 @@ func TestUpdateInboundClientIps_LiveIpNotBannedByStillFreshHistoricals(t *testin
 		{IP: "128.71.1.1", Timestamp: now},
 	}
 
-	shouldCleanLog := j.updateInboundClientIps(row, email, live)
+	shouldCleanLog := j.updateInboundClientIps(row, email, live, true)
 
 	if shouldCleanLog {
 		t.Fatalf("shouldCleanLog must be false, nothing should have been banned with 1 live ip under limit 3")
@@ -200,7 +200,7 @@ func TestUpdateInboundClientIps_ExcessLiveIpIsStillBanned(t *testing.T) {
 		{IP: "192.0.2.9", Timestamp: now},
 	}
 
-	shouldCleanLog := j.updateInboundClientIps(row, email, live)
+	shouldCleanLog := j.updateInboundClientIps(row, email, live, true)
 
 	if !shouldCleanLog {
 		t.Fatalf("shouldCleanLog must be true when the live set exceeds the limit")
@@ -225,6 +225,81 @@ func TestUpdateInboundClientIps_ExcessLiveIpIsStillBanned(t *testing.T) {
 	wantSubstr := "[LIMIT_IP] Email = pr4091-abuse || Disconnecting OLD IP = 192.0.2.9"
 	if !contains(string(body), wantSubstr) {
 		t.Fatalf("3xipl.log missing expected ban line %q\nfull log:\n%s", wantSubstr, body)
+	}
+}
+
+// A zero limit means observe only. Recent public IPs must still be saved so
+// the panel can show an approximate device count without blocking anyone.
+func TestUpdateInboundClientIps_ZeroLimitStillTracksRecentIps(t *testing.T) {
+	setupIntegrationDB(t)
+
+	const email = "monitor-only"
+	seedInboundWithClient(t, "inbound-monitor-only", email, 0)
+
+	now := time.Now().Unix()
+	row := seedClientIps(t, email, []IPWithTimestamp{
+		{IP: "10.2.0.1", Timestamp: now - 60},
+	})
+
+	j := NewCheckClientIpJob()
+	live := []IPWithTimestamp{
+		{IP: "10.2.0.1", Timestamp: now - 5},
+		{IP: "198.51.100.7", Timestamp: now},
+	}
+
+	shouldCleanLog := j.updateInboundClientIps(row, email, live, true)
+
+	if shouldCleanLog {
+		t.Fatalf("monitor-only client must not request access-log cleanup")
+	}
+	if len(j.disAllowedIps) != 0 {
+		t.Fatalf("monitor-only client must not ban IPs, got %v", j.disAllowedIps)
+	}
+
+	persisted := ipSet(readClientIps(t, email))
+	for _, want := range []string{"10.2.0.1", "198.51.100.7"} {
+		if _, ok := persisted[want]; !ok {
+			t.Errorf("expected monitor-only IP %s to be persisted; got %v", want, persisted)
+		}
+	}
+
+	if info, err := os.Stat(readIpLimitLogPath()); err == nil && info.Size() > 0 {
+		body, _ := os.ReadFile(readIpLimitLogPath())
+		t.Fatalf("3xipl.log should be empty for monitor-only clients, got:\n%s", body)
+	}
+}
+
+// If Fail2Ban is unavailable, a configured limit degrades to monitoring.
+// This keeps visibility working without pretending that blocking succeeded.
+func TestUpdateInboundClientIps_DisabledEnforcementStillTracksAllIps(t *testing.T) {
+	setupIntegrationDB(t)
+
+	const email = "monitor-without-fail2ban"
+	seedInboundWithClient(t, "inbound-monitor-without-fail2ban", email, 1)
+
+	now := time.Now().Unix()
+	row := seedClientIps(t, email, nil)
+
+	j := NewCheckClientIpJob()
+	live := []IPWithTimestamp{
+		{IP: "10.3.0.1", Timestamp: now - 5},
+		{IP: "203.0.113.9", Timestamp: now},
+	}
+
+	shouldCleanLog := j.updateInboundClientIps(row, email, live, false)
+
+	if shouldCleanLog {
+		t.Fatalf("disabled enforcement must not request access-log cleanup")
+	}
+	if len(j.disAllowedIps) != 0 {
+		t.Fatalf("disabled enforcement must not ban IPs, got %v", j.disAllowedIps)
+	}
+
+	persisted := ipSet(readClientIps(t, email))
+	for _, want := range []string{"10.3.0.1", "203.0.113.9"} {
+		if _, ok := persisted[want]; !ok {
+			t.Errorf("expected IP %s to be persisted while enforcement is disabled; got %v", want, persisted)
+		}
 	}
 }
 

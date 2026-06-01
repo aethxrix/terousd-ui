@@ -67,25 +67,17 @@ func (j *CheckClientIpJob) Run() {
 
 	shouldClearAccessLog := false
 	iplimitActive := j.hasLimitIp()
-	f2bInstalled := j.checkFail2BanInstalled()
 	isAccessLogAvailable := j.checkAccessLogAvailable(iplimitActive)
 
 	if isAccessLogAvailable {
-		if runtime.GOOS == "windows" {
-			if iplimitActive {
-				shouldClearAccessLog = j.processLogFile()
-			}
-		} else {
-			if iplimitActive {
-				if f2bInstalled {
-					shouldClearAccessLog = j.processLogFile()
-				} else {
-					if !f2bInstalled {
-						logger.Warning("[LimitIP] Fail2Ban is not installed, Please install Fail2Ban from the x-ui bash menu.")
-					}
-				}
+		enforceLimits := runtime.GOOS == "windows"
+		if runtime.GOOS != "windows" {
+			enforceLimits = j.checkFail2BanInstalled()
+			if iplimitActive && !enforceLimits {
+				logger.Warning("[LimitIP] Fail2Ban is not installed. Recent client IPs will still be tracked, but limits cannot be enforced. Please install Fail2Ban from the x-ui bash menu.")
 			}
 		}
+		shouldClearAccessLog = j.processLogFile(enforceLimits)
 	}
 
 	if shouldClearAccessLog || (isAccessLogAvailable && time.Now().Unix()-j.lastClear > 3600) {
@@ -143,7 +135,7 @@ func (j *CheckClientIpJob) hasLimitIp() bool {
 	return false
 }
 
-func (j *CheckClientIpJob) processLogFile() bool {
+func (j *CheckClientIpJob) processLogFile(enforceLimits bool) bool {
 
 	ipRegex := regexp.MustCompile(`from (?:tcp:|udp:)?\[?([0-9a-fA-F\.:]+)\]?:\d+ accepted`)
 	emailRegex := regexp.MustCompile(`email: (.+)$`)
@@ -214,11 +206,10 @@ func (j *CheckClientIpJob) processLogFile() bool {
 
 		clientIpsRecord, err := j.getInboundClientIps(email)
 		if err != nil {
-			j.addInboundClientIps(email, ipsWithTime)
-			continue
+			clientIpsRecord = &model.InboundClientIps{ClientEmail: email}
 		}
 
-		shouldCleanLog = j.updateInboundClientIps(clientIpsRecord, email, ipsWithTime) || shouldCleanLog
+		shouldCleanLog = j.updateInboundClientIps(clientIpsRecord, email, ipsWithTime, enforceLimits) || shouldCleanLog
 	}
 
 	return shouldCleanLog
@@ -319,33 +310,7 @@ func (j *CheckClientIpJob) getInboundClientIps(clientEmail string) (*model.Inbou
 	return InboundClientIps, nil
 }
 
-func (j *CheckClientIpJob) addInboundClientIps(clientEmail string, ipsWithTime []IPWithTimestamp) error {
-	inboundClientIps := &model.InboundClientIps{}
-	jsonIps, err := json.Marshal(ipsWithTime)
-	j.checkError(err)
-
-	inboundClientIps.ClientEmail = clientEmail
-	inboundClientIps.Ips = string(jsonIps)
-
-	db := database.GetDB()
-	tx := db.Begin()
-
-	defer func() {
-		if err == nil {
-			tx.Commit()
-		} else {
-			tx.Rollback()
-		}
-	}()
-
-	err = tx.Save(inboundClientIps).Error
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (j *CheckClientIpJob) updateInboundClientIps(inboundClientIps *model.InboundClientIps, clientEmail string, newIpsWithTime []IPWithTimestamp) bool {
+func (j *CheckClientIpJob) updateInboundClientIps(inboundClientIps *model.InboundClientIps, clientEmail string, newIpsWithTime []IPWithTimestamp, enforceLimits bool) bool {
 	// Get the inbound configuration
 	inbound, err := j.getInboundByEmail(clientEmail)
 	if err != nil {
@@ -373,15 +338,6 @@ func (j *CheckClientIpJob) updateInboundClientIps(inboundClientIps *model.Inboun
 		}
 	}
 
-	if !clientFound || limitIp <= 0 || !inbound.Enable {
-		// No limit or inbound disabled, just update and return
-		jsonIps, _ := json.Marshal(newIpsWithTime)
-		inboundClientIps.Ips = string(jsonIps)
-		db := database.GetDB()
-		db.Save(inboundClientIps)
-		return false
-	}
-
 	// Parse old IPs from database
 	var oldIpsWithTime []IPWithTimestamp
 	if inboundClientIps.Ips != "" {
@@ -399,6 +355,22 @@ func (j *CheckClientIpJob) updateInboundClientIps(inboundClientIps *model.Inboun
 		observedThisScan[ipTime.IP] = true
 	}
 	liveIps, historicalIps := partitionLiveIps(ipMap, observedThisScan)
+
+	db := database.GetDB()
+	if !clientFound || limitIp <= 0 || !inbound.Enable || !enforceLimits {
+		// Monitoring is always active when access logs are configured.
+		// A positive limit only adds enforcement; it is not required for
+		// recent public IPs to appear in the panel.
+		dbIps := make([]IPWithTimestamp, 0, len(liveIps)+len(historicalIps))
+		dbIps = append(dbIps, liveIps...)
+		dbIps = append(dbIps, historicalIps...)
+		jsonIps, _ := json.Marshal(dbIps)
+		inboundClientIps.Ips = string(jsonIps)
+		if err := db.Save(inboundClientIps).Error; err != nil {
+			logger.Error("failed to save inboundClientIps:", err)
+		}
+		return false
+	}
 
 	shouldCleanLog := false
 	j.disAllowedIps = []string{}
@@ -448,7 +420,6 @@ func (j *CheckClientIpJob) updateInboundClientIps(inboundClientIps *model.Inboun
 	jsonIps, _ := json.Marshal(dbIps)
 	inboundClientIps.Ips = string(jsonIps)
 
-	db := database.GetDB()
 	err = db.Save(inboundClientIps).Error
 	if err != nil {
 		logger.Error("failed to save inboundClientIps:", err)

@@ -227,6 +227,12 @@ export default function ClientInfoModal({
     }
   }
 
+  useEffect(() => {
+    if (open && client?.email) void loadIps();
+    // loadIps intentionally runs when the selected client changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, client?.email]);
+
   function openIpsModal() {
     setIpsModalOpen(true);
     if (clientIps.length === 0) void loadIps();
@@ -349,7 +355,7 @@ export default function ClientInfoModal({
                   <td>{!client.limitIp ? <Tag>∞</Tag> : <Tag>{client.limitIp}</Tag>}</td>
                 </tr>
                 <tr>
-                  <td>{t('pages.inbounds.IPLimitlog')}</td>
+                  <td>{t('pages.clients.recentIps')}</td>
                   <td>
                     <Button size="small" icon={<EyeOutlined />} loading={ipsLoading} onClick={openIpsModal}>
                       {clientIps.length > 0 ? clientIps.length : ''}
