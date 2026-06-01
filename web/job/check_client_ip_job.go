@@ -27,8 +27,9 @@ type IPWithTimestamp struct {
 
 // CheckClientIpJob monitors client IP addresses from access logs and manages IP blocking based on configured limits.
 type CheckClientIpJob struct {
-	lastClear     int64
-	disAllowedIps []string
+	lastClear             int64
+	disAllowedIps         []string
+	fail2BanWarningLogged bool
 }
 
 var job *CheckClientIpJob
@@ -74,7 +75,12 @@ func (j *CheckClientIpJob) Run() {
 		if runtime.GOOS != "windows" {
 			enforceLimits = j.checkFail2BanInstalled()
 			if iplimitActive && !enforceLimits {
-				logger.Warning("[LimitIP] Fail2Ban is not installed. Recent client IPs will still be tracked, but limits cannot be enforced. Please install Fail2Ban from the x-ui bash menu.")
+				if !j.fail2BanWarningLogged {
+					logger.Warning("[LimitIP] Fail2Ban is not installed. Recent client IPs will still be tracked, but limits cannot be enforced. Please install Fail2Ban from the x-ui bash menu.")
+					j.fail2BanWarningLogged = true
+				}
+			} else if enforceLimits {
+				j.fail2BanWarningLogged = false
 			}
 		}
 		shouldClearAccessLog = j.processLogFile(enforceLimits)
