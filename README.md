@@ -39,8 +39,8 @@ this source tree, then publish a version tag:
 ```bash
 git remote set-url origin https://github.com/aethxrix/terousd-ui.git
 git push -u origin main
-git tag v3.2.1
-git push origin v3.2.1
+git tag v3.2.2
+git push origin v3.2.2
 ```
 
 GitHub Actions builds the release assets. Once the release completes, the
