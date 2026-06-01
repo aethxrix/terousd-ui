@@ -4,6 +4,7 @@ export const ProtocolSchema = z.string();
 export type Protocol = z.infer<typeof ProtocolSchema>;
 
 export const AllSettingSchema = z.object({
+  clientNodeAddress: z.string(),
   datepicker: z.string(),
   expireDiff: z.number().int().min(0),
   externalTrafficInformEnable: z.boolean(),
@@ -86,6 +87,7 @@ export const AllSettingSchema = z.object({
 export type AllSetting = z.infer<typeof AllSettingSchema>;
 
 export const AllSettingViewSchema = z.object({
+  clientNodeAddress: z.string(),
   datepicker: z.string(),
   expireDiff: z.number().int().min(0),
   externalTrafficInformEnable: z.boolean(),
@@ -292,7 +294,7 @@ export const InboundSchema = z.object({
   listen: z.string(),
   nodeId: z.number().int().nullable().optional(),
   port: z.number().int().min(1).max(65535),
-  protocol: z.enum(['vmess', 'vless', 'trojan', 'shadowsocks', 'wireguard', 'hysteria', 'http', 'mixed', 'tunnel']),
+  protocol: z.enum(['vmess', 'vless', 'trojan', 'shadowsocks', 'wireguard', 'hysteria', 'http', 'mixed', 'tunnel', 'tun']),
   remark: z.string(),
   settings: z.unknown(),
   sniffing: z.unknown(),

@@ -34,6 +34,10 @@ export default function SubscriptionGeneralTab({ allSetting, updateSetting }: Su
             <SettingListItem paddings="small" title={t('pages.settings.subDomain')} description={t('pages.settings.subDomainDesc')}>
               <Input value={allSetting.subDomain} onChange={(e) => updateSetting({ subDomain: e.target.value })} />
             </SettingListItem>
+            <SettingListItem paddings="small" title={t('pages.settings.clientNodeAddress')} description={t('pages.settings.clientNodeAddressDesc')}>
+              <Input value={allSetting.clientNodeAddress} placeholder="vps.terousd.online"
+                onChange={(e) => updateSetting({ clientNodeAddress: e.target.value.trim() })} />
+            </SettingListItem>
             <SettingListItem paddings="small" title={t('pages.settings.subPort')} description={t('pages.settings.subPortDesc')}>
               <InputNumber value={allSetting.subPort} min={1} max={65535} style={{ width: '100%' }}
                 onChange={(v) => updateSetting({ subPort: Number(v) || 0 })} />

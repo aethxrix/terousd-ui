@@ -112,7 +112,7 @@ export default function InboundInfoModal({
     setClientStats(stats);
 
     const inboundForLinks = inboundFromDb(dbInbound);
-    const fallbackHostname = window.location.hostname;
+    const fallbackHostname = subSettings?.clientNodeAddress || window.location.hostname;
     if (info.protocol === Protocols.WIREGUARD) {
       setWireguardConfigs(
         genWireguardConfigs({

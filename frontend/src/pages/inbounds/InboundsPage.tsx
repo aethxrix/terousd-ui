@@ -253,11 +253,11 @@ export default function InboundsPage() {
         remark: projected.remark,
         remarkModel,
         hostOverride: hostOverrideFor(dbInbound),
-        fallbackHostname: window.location.hostname,
+        fallbackHostname: subSettings.clientNodeAddress || window.location.hostname,
       }),
       fileName: projected.remark || 'inbound',
     });
-  }, [checkFallback, remarkModel, hostOverrideFor, openText, t]);
+  }, [checkFallback, remarkModel, hostOverrideFor, openText, subSettings.clientNodeAddress, t]);
 
   const exportInboundClipboard = useCallback((dbInbound: DBInbound) => {
     openText({ title: t('pages.inbounds.inboundJsonTitle'), content: JSON.stringify(dbInbound, null, 2) });
@@ -291,11 +291,11 @@ export default function InboundsPage() {
         remark: projected.remark,
         remarkModel,
         hostOverride: hostOverrideFor(ib),
-        fallbackHostname: window.location.hostname,
+        fallbackHostname: subSettings.clientNodeAddress || window.location.hostname,
       }));
     }
     openText({ title: t('pages.inbounds.exportAllLinksTitle'), content: out.join('\r\n'), fileName: t('pages.inbounds.exportAllLinksFileName') });
-  }, [dbInbounds, hydrateInbound, checkFallback, remarkModel, hostOverrideFor, openText, t]);
+  }, [dbInbounds, hydrateInbound, checkFallback, remarkModel, hostOverrideFor, openText, subSettings.clientNodeAddress, t]);
 
   const exportAllSubs = useCallback(async () => {
     const hydrated = await Promise.all(

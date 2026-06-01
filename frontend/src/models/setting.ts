@@ -43,6 +43,7 @@ export class AllSetting {
   subClashEnable = false;
   subClashPath = '/clash/';
   subDomain = '';
+  clientNodeAddress = 'vps.terousd.online';
   externalTrafficInformEnable = false;
   externalTrafficInformURI = '';
   restartXrayOnClientDisable = true;

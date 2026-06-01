@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/aethxrix/terousd-ui/v3/util/common"
+	"github.com/aethxrix/terousd-ui/v3/util/netsafe"
 )
 
 // Msg represents a standard API response message with success status, message text, and optional data object.
@@ -68,6 +69,7 @@ type AllSetting struct {
 	SubPort                     int    `json:"subPort" form:"subPort" validate:"gte=1,lte=65535"`              // Subscription server port
 	SubPath                     string `json:"subPath" form:"subPath"`                                         // Base path for subscription URLs
 	SubDomain                   string `json:"subDomain" form:"subDomain"`                                     // Domain for subscription server validation
+	ClientNodeAddress           string `json:"clientNodeAddress" form:"clientNodeAddress"`                     // Default externally reachable address advertised in client links
 	SubCertFile                 string `json:"subCertFile" form:"subCertFile"`                                 // SSL certificate file for subscription server
 	SubKeyFile                  string `json:"subKeyFile" form:"subKeyFile"`                                   // SSL private key file for subscription server
 	SubUpdates                  int    `json:"subUpdates" form:"subUpdates" validate:"gte=0,lte=525600"`       // Subscription update interval in minutes
@@ -150,6 +152,14 @@ func (s *AllSetting) CheckValid() error {
 		if ip == nil {
 			return common.NewError("Sub listen is not valid ip:", s.SubListen)
 		}
+	}
+
+	if s.ClientNodeAddress != "" {
+		address, err := netsafe.NormalizeHost(s.ClientNodeAddress)
+		if err != nil {
+			return common.NewError("client node address is not a valid hostname or IP:", s.ClientNodeAddress)
+		}
+		s.ClientNodeAddress = address
 	}
 
 	if s.WebPort <= 0 || s.WebPort > math.MaxUint16 {

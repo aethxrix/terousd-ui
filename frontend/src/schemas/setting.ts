@@ -47,6 +47,7 @@ export const AllSettingSchema = z.object({
   subClashEnable: z.boolean().optional(),
   subClashPath: absolutePath.optional(),
   subDomain: z.string().optional(),
+  clientNodeAddress: z.string().optional(),
   externalTrafficInformEnable: z.boolean().optional(),
   externalTrafficInformURI: z.string().optional(),
   restartXrayOnClientDisable: z.boolean().optional(),

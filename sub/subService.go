@@ -52,7 +52,9 @@ func NewSubService(showInfo bool, remarkModel string) *SubService {
 // freshly-loaded node map regardless of which sub flavour the client
 // hit.
 func (s *SubService) PrepareForRequest(host string) {
-	if !isRoutableHost(host) {
+	if d := s.configuredClientNodeAddress(); d != "" {
+		host = d
+	} else if !isRoutableHost(host) {
 		if d := s.configuredPublicHost(); d != "" {
 			host = d
 		} else if isLoopbackHost(host) {
@@ -61,6 +63,13 @@ func (s *SubService) PrepareForRequest(host string) {
 	}
 	s.address = host
 	s.loadNodes()
+}
+
+func (s *SubService) configuredClientNodeAddress() string {
+	if d, err := s.settingService.GetClientNodeAddress(); err == nil && d != "" {
+		return d
+	}
+	return ""
 }
 
 func (s *SubService) configuredPublicHost() string {

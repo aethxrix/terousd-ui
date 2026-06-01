@@ -67,6 +67,7 @@ var defaultValueMap = map[string]string{
 	"subPort":                     "2096",
 	"subPath":                     "/sub/",
 	"subDomain":                   "",
+	"clientNodeAddress":           "vps.terousd.online",
 	"subCertFile":                 "",
 	"subKeyFile":                  "",
 	"subUpdates":                  "12",
@@ -593,6 +594,10 @@ func (s *SettingService) GetSubDomain() (string, error) {
 	return s.getString("subDomain")
 }
 
+func (s *SettingService) GetClientNodeAddress() (string, error) {
+	return s.getString("clientNodeAddress")
+}
+
 func (s *SettingService) SetSubCertFile(subCertFile string) error {
 	return s.setString("subCertFile", subCertFile)
 }
@@ -911,22 +916,23 @@ func extractHostname(host string) string {
 func (s *SettingService) GetDefaultSettings(host string) (any, error) {
 	type settingFunc func() (any, error)
 	settings := map[string]settingFunc{
-		"expireDiff":     func() (any, error) { return s.GetExpireDiff() },
-		"trafficDiff":    func() (any, error) { return s.GetTrafficDiff() },
-		"pageSize":       func() (any, error) { return s.GetPageSize() },
-		"defaultCert":    func() (any, error) { return s.GetCertFile() },
-		"defaultKey":     func() (any, error) { return s.GetKeyFile() },
-		"tgBotEnable":    func() (any, error) { return s.GetTgbotEnabled() },
-		"subEnable":      func() (any, error) { return s.GetSubEnable() },
-		"subJsonEnable":  func() (any, error) { return s.GetSubJsonEnable() },
-		"subClashEnable": func() (any, error) { return s.GetSubClashEnable() },
-		"subTitle":       func() (any, error) { return s.GetSubTitle() },
-		"subURI":         func() (any, error) { return s.GetSubURI() },
-		"subJsonURI":     func() (any, error) { return s.GetSubJsonURI() },
-		"subClashURI":    func() (any, error) { return s.GetSubClashURI() },
-		"remarkModel":    func() (any, error) { return s.GetRemarkModel() },
-		"datepicker":     func() (any, error) { return s.GetDatepicker() },
-		"ipLimitEnable":  func() (any, error) { return s.GetIpLimitEnable() },
+		"expireDiff":        func() (any, error) { return s.GetExpireDiff() },
+		"trafficDiff":       func() (any, error) { return s.GetTrafficDiff() },
+		"pageSize":          func() (any, error) { return s.GetPageSize() },
+		"defaultCert":       func() (any, error) { return s.GetCertFile() },
+		"defaultKey":        func() (any, error) { return s.GetKeyFile() },
+		"tgBotEnable":       func() (any, error) { return s.GetTgbotEnabled() },
+		"subEnable":         func() (any, error) { return s.GetSubEnable() },
+		"subJsonEnable":     func() (any, error) { return s.GetSubJsonEnable() },
+		"subClashEnable":    func() (any, error) { return s.GetSubClashEnable() },
+		"subTitle":          func() (any, error) { return s.GetSubTitle() },
+		"subURI":            func() (any, error) { return s.GetSubURI() },
+		"subJsonURI":        func() (any, error) { return s.GetSubJsonURI() },
+		"subClashURI":       func() (any, error) { return s.GetSubClashURI() },
+		"clientNodeAddress": func() (any, error) { return s.GetClientNodeAddress() },
+		"remarkModel":       func() (any, error) { return s.GetRemarkModel() },
+		"datepicker":        func() (any, error) { return s.GetDatepicker() },
+		"ipLimitEnable":     func() (any, error) { return s.GetIpLimitEnable() },
 	}
 
 	result := make(map[string]any)

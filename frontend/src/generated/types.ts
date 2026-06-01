@@ -2,6 +2,7 @@
 export type Protocol = string;
 
 export interface AllSetting {
+  clientNodeAddress: string;
   datepicker: string;
   expireDiff: number;
   externalTrafficInformEnable: boolean;
@@ -81,7 +82,9 @@ export interface AllSetting {
   webListen: string;
   webPort: number;
 }
+
 export interface AllSettingView {
+  clientNodeAddress: string;
   datepicker: string;
   expireDiff: number;
   externalTrafficInformEnable: boolean;

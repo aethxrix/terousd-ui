@@ -18,6 +18,7 @@ export interface SubSettings {
   subURI: string;
   subJsonURI: string;
   subJsonEnable: boolean;
+  clientNodeAddress: string;
 }
 
 type DBInboundInstance = InstanceType<typeof DBInbound>;
@@ -110,7 +111,8 @@ export function useInbounds() {
     subURI: defaults.subURI || '',
     subJsonURI: defaults.subJsonURI || '',
     subJsonEnable: !!defaults.subJsonEnable,
-  }), [defaults.subEnable, defaults.subTitle, defaults.subURI, defaults.subJsonURI, defaults.subJsonEnable]);
+    clientNodeAddress: defaults.clientNodeAddress || '',
+  }), [defaults.subEnable, defaults.subTitle, defaults.subURI, defaults.subJsonURI, defaults.subJsonEnable, defaults.clientNodeAddress]);
 
   useEffect(() => {
     if (defaults.datepicker) setDatepicker(datepicker);
