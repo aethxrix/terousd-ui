@@ -53,8 +53,7 @@ func (lw *LogWriter) Write(m []byte) (n int, err error) {
 			msgBody := matches[3]
 			msgBodyLower := strings.ToLower(msgBody)
 
-			if strings.Contains(msgBodyLower, "tls handshake error") ||
-				strings.Contains(msgBodyLower, "connection ends") {
+			if isExpectedDisconnectNoise(msgBodyLower) {
 				logger.Debug("XRAY: " + msgBody)
 				lw.lastLine = ""
 				continue
@@ -80,8 +79,7 @@ func (lw *LogWriter) Write(m []byte) (n int, err error) {
 		} else if msg != "" {
 			msgLower := strings.ToLower(msg)
 
-			if strings.Contains(msgLower, "tls handshake error") ||
-				strings.Contains(msgLower, "connection ends") {
+			if isExpectedDisconnectNoise(msgLower) {
 				logger.Debug("XRAY: " + msg)
 				lw.lastLine = msg
 				continue
@@ -97,4 +95,16 @@ func (lw *LogWriter) Write(m []byte) (n int, err error) {
 	}
 
 	return len(m), nil
+}
+
+func isExpectedDisconnectNoise(message string) bool {
+	if strings.Contains(message, "tls handshake error") ||
+		strings.Contains(message, "connection ends") {
+		return true
+	}
+
+	return strings.Contains(message, "proxy/trojan: failed to write response") &&
+		(strings.Contains(message, "use of closed network connection") ||
+			strings.Contains(message, "connection reset by peer") ||
+			strings.Contains(message, "broken pipe"))
 }
