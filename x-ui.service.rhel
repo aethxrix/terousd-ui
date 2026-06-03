@@ -11,7 +11,10 @@ WorkingDirectory=/usr/local/x-ui/
 ExecStart=/usr/local/x-ui/x-ui
 ExecReload=kill -USR1 $MAINPID
 Restart=on-failure
-RestartSec=5s
+RestartSec=2s
+LimitNOFILE=1048576
+LimitNPROC=65535
+OOMScoreAdjust=-100
 
 [Install]
 WantedBy=multi-user.target

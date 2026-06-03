@@ -103,6 +103,52 @@ install_base() {
     esac
 }
 
+apply_terousd_speed_tuning() {
+    echo -e "${green}Applying Terousd VPN speed tuning...${plain}"
+
+    if [[ -d /etc/sysctl.d ]]; then
+        cat > /etc/sysctl.d/99-terousd-vpn-speed.conf << 'EOF'
+# Terousd UI VPN latency/throughput tuning.
+# Safe defaults for proxy-heavy VPS workloads with many short-lived sessions.
+net.core.default_qdisc=fq
+net.ipv4.tcp_congestion_control=bbr
+net.ipv4.tcp_fastopen=3
+net.ipv4.tcp_mtu_probing=1
+net.ipv4.tcp_slow_start_after_idle=0
+net.ipv4.tcp_tw_reuse=1
+net.ipv4.ip_local_port_range=1024 65535
+net.ipv4.tcp_fin_timeout=10
+net.ipv4.tcp_keepalive_time=600
+net.ipv4.tcp_keepalive_intvl=30
+net.ipv4.tcp_keepalive_probes=5
+net.core.somaxconn=65535
+net.core.netdev_max_backlog=65535
+net.ipv4.tcp_max_syn_backlog=65535
+net.ipv4.tcp_synack_retries=3
+net.ipv4.tcp_rmem=4096 262144 33554432
+net.ipv4.tcp_wmem=4096 262144 33554432
+net.ipv4.tcp_notsent_lowat=16384
+fs.file-max=1048576
+EOF
+        sysctl --system > /dev/null 2>&1 || true
+    else
+        echo -e "${yellow}/etc/sysctl.d not found; skipping kernel speed tuning.${plain}"
+    fi
+
+    if command -v systemctl > /dev/null 2>&1 && [[ "$release" != "alpine" ]]; then
+        mkdir -p /etc/systemd/system/x-ui.service.d
+        cat > /etc/systemd/system/x-ui.service.d/10-terousd-speed.conf << 'EOF'
+[Service]
+LimitNOFILE=1048576
+LimitNPROC=65535
+OOMScoreAdjust=-100
+Restart=on-failure
+RestartSec=2s
+EOF
+        systemctl daemon-reload > /dev/null 2>&1 || true
+    fi
+}
+
 gen_random_string() {
     local length="$1"
     openssl rand -base64 $((length * 2)) \
@@ -1278,6 +1324,7 @@ install_x-ui() {
             echo -e "${green}Setting up systemd unit...${plain}"
             chown root:root ${xui_service}/x-ui.service > /dev/null 2>&1
             chmod 644 ${xui_service}/x-ui.service > /dev/null 2>&1
+            apply_terousd_speed_tuning
             systemctl daemon-reload
             systemctl enable x-ui
             systemctl start x-ui

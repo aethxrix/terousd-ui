@@ -603,6 +603,8 @@ disable_bbr() {
         before_show_menu
     fi
 
+    rm -f /etc/sysctl.d/99-terousd-vpn-speed.conf
+
     if [ -f "/etc/sysctl.d/99-bbr-x-ui.conf" ]; then
         old_settings=$(head -1 /etc/sysctl.d/99-bbr-x-ui.conf | tr -d '#')
         sysctl -w net.core.default_qdisc="${old_settings%:*}"
@@ -626,24 +628,42 @@ disable_bbr() {
 }
 
 enable_bbr() {
-    if [[ $(sysctl -n net.ipv4.tcp_congestion_control) == "bbr" ]] && [[ $(sysctl -n net.core.default_qdisc) =~ ^(fq|cake)$ ]]; then
-        echo -e "${green}BBR is already enabled!${plain}"
+    if [[ $(sysctl -n net.ipv4.tcp_congestion_control) == "bbr" ]] && [[ $(sysctl -n net.core.default_qdisc) =~ ^(fq|cake)$ ]] && [[ -f /etc/sysctl.d/99-terousd-vpn-speed.conf ]]; then
+        echo -e "${green}Terousd VPN speed tuning is already enabled!${plain}"
         before_show_menu
     fi
 
-    # Enable BBR
+    # Enable BBR and proxy-friendly kernel defaults.
     if [ -d "/etc/sysctl.d/" ]; then
-        {
-            echo "#$(sysctl -n net.core.default_qdisc):$(sysctl -n net.ipv4.tcp_congestion_control)"
-            echo "net.core.default_qdisc = fq"
-            echo "net.ipv4.tcp_congestion_control = bbr"
-        } > "/etc/sysctl.d/99-bbr-x-ui.conf"
+        cat > "/etc/sysctl.d/99-terousd-vpn-speed.conf" << 'EOF'
+# Terousd UI VPN latency/throughput tuning.
+# Safe defaults for proxy-heavy VPS workloads with many short-lived sessions.
+net.core.default_qdisc=fq
+net.ipv4.tcp_congestion_control=bbr
+net.ipv4.tcp_fastopen=3
+net.ipv4.tcp_mtu_probing=1
+net.ipv4.tcp_slow_start_after_idle=0
+net.ipv4.tcp_tw_reuse=1
+net.ipv4.ip_local_port_range=1024 65535
+net.ipv4.tcp_fin_timeout=10
+net.ipv4.tcp_keepalive_time=600
+net.ipv4.tcp_keepalive_intvl=30
+net.ipv4.tcp_keepalive_probes=5
+net.core.somaxconn=65535
+net.core.netdev_max_backlog=65535
+net.ipv4.tcp_max_syn_backlog=65535
+net.ipv4.tcp_synack_retries=3
+net.ipv4.tcp_rmem=4096 262144 33554432
+net.ipv4.tcp_wmem=4096 262144 33554432
+net.ipv4.tcp_notsent_lowat=16384
+fs.file-max=1048576
+EOF
         if [ -f "/etc/sysctl.conf" ]; then
             # Backup old settings from sysctl.conf, if any
             sed -i 's/^net.core.default_qdisc/# &/' /etc/sysctl.conf
             sed -i 's/^net.ipv4.tcp_congestion_control/# &/' /etc/sysctl.conf
         fi
-        sysctl --system
+        sysctl --system > /dev/null 2>&1 || true
     else
         sed -i '/net.core.default_qdisc/d' /etc/sysctl.conf
         sed -i '/net.ipv4.tcp_congestion_control/d' /etc/sysctl.conf
@@ -652,9 +672,22 @@ enable_bbr() {
         sysctl -p
     fi
 
+    if command -v systemctl > /dev/null 2>&1; then
+        mkdir -p /etc/systemd/system/x-ui.service.d
+        cat > /etc/systemd/system/x-ui.service.d/10-terousd-speed.conf << 'EOF'
+[Service]
+LimitNOFILE=1048576
+LimitNPROC=65535
+OOMScoreAdjust=-100
+Restart=on-failure
+RestartSec=2s
+EOF
+        systemctl daemon-reload > /dev/null 2>&1 || true
+    fi
+
     # Verify that BBR is enabled
     if [[ $(sysctl -n net.ipv4.tcp_congestion_control) == "bbr" ]]; then
-        echo -e "${green}BBR has been enabled successfully.${plain}"
+        echo -e "${green}Terousd VPN speed tuning has been enabled successfully.${plain}"
     else
         echo -e "${red}Failed to enable BBR. Please check your system configuration.${plain}"
     fi
