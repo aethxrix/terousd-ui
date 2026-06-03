@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest an idea or improvement for 3x-ui
+description: Suggest an idea or improvement for Terousd UI
 title: "[Feature]: "
 labels: ["enhancement", "needs triage"]
 
@@ -8,14 +8,14 @@ body:
     attributes:
       value: |
         Thanks for taking the time to suggest a feature. Please **search
-        [existing issues](../issues?q=is%3Aissue)** first — duplicates will be closed.
+        [existing issues](../issues?q=is%3Aissue)** first - duplicates will be closed.
 
   - type: textarea
     id: is-related-problem
     attributes:
       label: Is your feature request related to a problem?
       description: A clear and concise description of the problem you're hitting today.
-      placeholder: I'm always frustrated when …
+      placeholder: I'm always frustrated when ...
     validations:
       required: true
 
@@ -24,11 +24,11 @@ body:
     attributes:
       label: Describe the solution you'd like
       description: |
-        What should the panel do? Be specific — UI placement, API shape,
+        What should the panel do? Be specific - UI placement, API shape,
         config keys, expected behavior under edge cases.
       placeholder: |
-        On the Inbounds page, add a button that …
-        The backend should expose a new endpoint at …
+        On the Inbounds page, add a button that ...
+        The backend should expose a new endpoint at ...
     validations:
       required: true
 
@@ -46,7 +46,7 @@ body:
       label: Concrete use case
       description: |
         Walk us through a real scenario where this feature would help.
-        Numbers help (e.g. "I manage 200 clients across 5 inbounds and …").
+        Numbers help (e.g. "I manage 200 clients across 5 inbounds and ...").
     validations:
       required: false
 
@@ -84,7 +84,7 @@ body:
     id: contribution
     attributes:
       label: Are you willing to help?
-      description: Optional — but maintainers prioritize requests with community help.
+      description: Optional - but maintainers prioritize requests with community help.
       options:
         - label: I'd like to implement this feature myself and open a PR.
           required: false

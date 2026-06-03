@@ -1,5 +1,5 @@
 name: Question
-description: Ask how to do something with 3x-ui
+description: Ask how to do something with Terousd UI
 title: "[Question]: "
 labels: ["question"]
 
@@ -9,9 +9,8 @@ body:
       value: |
         Before opening a question, please:
 
-        - Read the [project Wiki](https://github.com/MHSanaei/3x-ui/wiki) —
-          most setup, install, and "how do I …" answers live there.
-        - Search [existing issues](../issues?q=is%3Aissue) — the question
+        - Read the Terousd UI README and project documentation.
+        - Search [existing issues](../issues?q=is%3Aissue) - the question
           may already have been asked.
 
         Use this template only when you have a usage question that the docs
@@ -24,8 +23,8 @@ body:
       label: What are you trying to do?
       description: Describe the goal, not just the symptom. The clearer the goal, the better the answer.
       placeholder: |
-        I'm trying to … so that …
-        I expected the panel to … but I'm not sure how to configure it.
+        I'm trying to ... so that ...
+        I expected the panel to ... but I'm not sure how to configure it.
     validations:
       required: true
 
@@ -33,26 +32,26 @@ body:
     id: tried
     attributes:
       label: What have you already tried?
-      description: Pages of the Wiki you read, settings you toggled, commands you ran.
+      description: Documentation you read, settings you toggled, commands you ran.
       placeholder: |
-        - Read the `Reverse Proxy` page of the Wiki
-        - Tried setting `xrayBasePath` to `/proxy` — got 404
+        - Read the reverse proxy notes
+        - Tried setting `xrayBasePath` to `/proxy` - got 404
     validations:
       required: false
 
   - type: input
     id: xui-version
     attributes:
-      label: 3x-ui version
+      label: Terousd UI version
       description: Shown at the top of the panel sidebar.
-      placeholder: 3.1.0
+      placeholder: 3.2.4
     validations:
       required: true
 
   - type: dropdown
     id: install-method
     attributes:
-      label: How did you install 3x-ui?
+      label: How did you install Terousd UI?
       options:
         - install.sh script
         - Docker / Docker Compose
@@ -65,7 +64,7 @@ body:
     id: os
     attributes:
       label: Operating system
-      placeholder: Ubuntu 24.04 / Debian 12 / CentOS Stream 9 …
+      placeholder: Ubuntu 24.04 / Debian 12 / CentOS Stream 9 ...
     validations:
       required: false
 
@@ -82,7 +81,7 @@ body:
     attributes:
       label: Before submitting
       options:
-        - label: I read the [Wiki](https://github.com/MHSanaei/3x-ui/wiki) and searched [existing issues](../issues?q=is%3Aissue).
+        - label: I read the Terousd UI documentation and searched [existing issues](../issues?q=is%3Aissue).
           required: true
         - label: This is a usage question, not a bug report.
           required: true
