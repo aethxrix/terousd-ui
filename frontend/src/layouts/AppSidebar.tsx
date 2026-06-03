@@ -70,6 +70,20 @@ function VersionBadge({ version, collapsed }: { version: string; collapsed?: boo
   );
 }
 
+function BrandMark({ collapsed }: { collapsed?: boolean }) {
+  return (
+    <div className={`brand-mark-wrap${collapsed ? ' is-collapsed' : ''}`}>
+      <span className="brand-mark" aria-hidden="true">T</span>
+      {!collapsed && (
+        <span className="brand-copy">
+          <span className="brand-text">TEROUSD UI</span>
+          <span className="brand-kicker">control plane</span>
+        </span>
+      )}
+    </div>
+  );
+}
+
 function ThemeCycleButton({ id, isDark, isUltra, onCycle, ariaLabel }: {
   id: string;
   isDark: boolean;
@@ -175,9 +189,7 @@ export default function AppSidebar() {
         onCollapse={onSiderCollapse}
       >
         <div className={`sider-brand${collapsed ? ' sider-brand-collapsed' : ''}`}>
-          <div className="brand-block">
-            <span className="brand-text">{collapsed ? 'TU' : 'TEROUSD UI'}</span>
-          </div>
+          <BrandMark collapsed={collapsed} />
           {!collapsed && (
             <div className="brand-actions">
               <ThemeCycleButton
@@ -225,9 +237,7 @@ export default function AppSidebar() {
         onClose={() => setDrawerOpen(false)}
       >
         <div className="drawer-header">
-          <div className="brand-block">
-            <span className="drawer-brand">TEROUSD UI</span>
-          </div>
+          <BrandMark />
           <div className="drawer-header-actions">
             <ThemeCycleButton
               id="theme-cycle-drawer"

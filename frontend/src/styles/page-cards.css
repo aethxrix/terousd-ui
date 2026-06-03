@@ -6,9 +6,28 @@
 .nodes-page .ant-card,
 .groups-page .ant-card,
 .api-docs-page .ant-card {
-  border-radius: 12px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  border-color: color-mix(in srgb, var(--ant-color-primary) 14%, var(--ant-color-border-secondary)) !important;
+  box-shadow: 0 14px 40px rgba(79, 70, 229, 0.08), 0 1px 2px rgba(15, 23, 42, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.index-page .ant-card::before,
+.clients-page .ant-card::before,
+.inbounds-page .ant-card::before,
+.xray-page .ant-card::before,
+.settings-page .ant-card::before,
+.nodes-page .ant-card::before,
+.groups-page .ant-card::before,
+.api-docs-page .ant-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.45), rgba(34, 211, 238, 0.38), transparent);
 }
 
 .index-page.is-dark .ant-card,
@@ -20,8 +39,10 @@
 .groups-page.is-dark .ant-card,
 .api-docs-page.is-dark .ant-card {
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    0 18px 52px rgba(2, 6, 23, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
 }
 
 .index-page.is-dark.is-ultra .ant-card,
@@ -33,7 +54,7 @@
 .groups-page.is-dark.is-ultra .ant-card,
 .api-docs-page.is-dark.is-ultra .ant-card {
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.6),
+    0 18px 52px rgba(0, 0, 0, 0.62),
     inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
 
@@ -46,7 +67,8 @@
 .groups-page .ant-card.ant-card-hoverable:hover,
 .api-docs-page .ant-card.ant-card-hoverable:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  border-color: color-mix(in srgb, var(--ant-color-primary) 36%, var(--ant-color-border-secondary)) !important;
+  box-shadow: 0 18px 48px rgba(79, 70, 229, 0.14), 0 4px 10px rgba(15, 23, 42, 0.08);
 }
 
 .index-page.is-dark .ant-card.ant-card-hoverable:hover,
@@ -58,8 +80,9 @@
 .groups-page.is-dark .ant-card.ant-card-hoverable:hover,
 .api-docs-page.is-dark .ant-card.ant-card-hoverable:hover {
   box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 22px 58px rgba(0, 0, 0, 0.48),
+    0 0 38px color-mix(in srgb, var(--ant-color-primary) 10%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .index-page.is-dark.is-ultra .ant-card.ant-card-hoverable:hover,
@@ -71,7 +94,8 @@
 .groups-page.is-dark.is-ultra .ant-card.ant-card-hoverable:hover,
 .api-docs-page.is-dark.is-ultra .ant-card.ant-card-hoverable:hover {
   box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.75),
+    0 22px 58px rgba(0, 0, 0, 0.72),
+    0 0 38px color-mix(in srgb, var(--ant-color-primary) 10%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
@@ -84,4 +108,65 @@
 .groups-page .ant-card .ant-card-actions,
 .api-docs-page .ant-card .ant-card-actions {
   background: transparent;
+}
+
+.index-page .ant-card-head,
+.clients-page .ant-card-head,
+.inbounds-page .ant-card-head,
+.xray-page .ant-card-head,
+.settings-page .ant-card-head,
+.nodes-page .ant-card-head,
+.groups-page .ant-card-head,
+.api-docs-page .ant-card-head {
+  border-bottom-color: color-mix(in srgb, var(--ant-color-primary) 12%, var(--ant-color-border-secondary));
+}
+
+.index-page .ant-table-wrapper .ant-table,
+.clients-page .ant-table-wrapper .ant-table,
+.inbounds-page .ant-table-wrapper .ant-table,
+.xray-page .ant-table-wrapper .ant-table,
+.settings-page .ant-table-wrapper .ant-table,
+.nodes-page .ant-table-wrapper .ant-table,
+.groups-page .ant-table-wrapper .ant-table,
+.api-docs-page .ant-table-wrapper .ant-table {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.index-page .ant-table-thead > tr > th,
+.clients-page .ant-table-thead > tr > th,
+.inbounds-page .ant-table-thead > tr > th,
+.xray-page .ant-table-thead > tr > th,
+.settings-page .ant-table-thead > tr > th,
+.nodes-page .ant-table-thead > tr > th,
+.groups-page .ant-table-thead > tr > th,
+.api-docs-page .ant-table-thead > tr > th {
+  background: color-mix(in srgb, var(--ant-color-primary) 10%, var(--ant-color-bg-container)) !important;
+}
+
+.index-page .ant-btn-primary,
+.clients-page .ant-btn-primary,
+.inbounds-page .ant-btn-primary,
+.xray-page .ant-btn-primary,
+.settings-page .ant-btn-primary,
+.nodes-page .ant-btn-primary,
+.groups-page .ant-btn-primary,
+.api-docs-page .ant-btn-primary {
+  background: linear-gradient(135deg, var(--ant-color-primary), #0891b2);
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--ant-color-primary) 26%, transparent);
+}
+
+.index-page .ant-input,
+.index-page .ant-input-affix-wrapper,
+.index-page .ant-select-selector,
+.clients-page .ant-input,
+.clients-page .ant-input-affix-wrapper,
+.clients-page .ant-select-selector,
+.inbounds-page .ant-input,
+.inbounds-page .ant-input-affix-wrapper,
+.inbounds-page .ant-select-selector,
+.settings-page .ant-input,
+.settings-page .ant-input-affix-wrapper,
+.settings-page .ant-select-selector {
+  border-color: color-mix(in srgb, var(--ant-color-primary) 18%, var(--ant-color-border));
 }

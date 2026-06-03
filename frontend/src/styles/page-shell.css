@@ -6,10 +6,13 @@
 .nodes-page,
 .groups-page,
 .api-docs-page {
-  --bg-page: #e6e8ec;
+  --bg-page: #eef2ff;
   --bg-card: #ffffff;
   min-height: 100vh;
-  background: var(--bg-page);
+  background:
+    radial-gradient(circle at 16% 8%, rgba(124, 58, 237, 0.16), transparent 28%),
+    radial-gradient(circle at 84% 10%, rgba(34, 211, 238, 0.12), transparent 26%),
+    linear-gradient(135deg, #eef2ff 0%, #f8fafc 48%, #ecfeff 100%);
 }
 
 .index-page.is-dark,
@@ -20,8 +23,13 @@
 .nodes-page.is-dark,
 .groups-page.is-dark,
 .api-docs-page.is-dark {
-  --bg-page: #1a1b1f;
-  --bg-card: #23252b;
+  --bg-page: #0b1020;
+  --bg-card: rgba(18, 24, 42, 0.78);
+  background:
+    radial-gradient(circle at 18% 8%, rgba(124, 58, 237, 0.22), transparent 30%),
+    radial-gradient(circle at 86% 14%, rgba(34, 211, 238, 0.12), transparent 28%),
+    radial-gradient(circle at 50% 100%, rgba(244, 63, 94, 0.08), transparent 30%),
+    #0b1020;
 }
 
 .index-page.is-dark.is-ultra,
@@ -32,8 +40,12 @@
 .nodes-page.is-dark.is-ultra,
 .groups-page.is-dark.is-ultra,
 .api-docs-page.is-dark.is-ultra {
-  --bg-page: #000;
-  --bg-card: #101013;
+  --bg-page: #030712;
+  --bg-card: rgba(8, 13, 26, 0.82);
+  background:
+    radial-gradient(circle at 18% 8%, rgba(139, 92, 246, 0.18), transparent 30%),
+    radial-gradient(circle at 86% 14%, rgba(34, 211, 238, 0.10), transparent 28%),
+    #030712;
 }
 
 .index-page .ant-layout,
@@ -73,7 +85,31 @@
 .settings-page .content-area,
 .nodes-page .content-area,
 .groups-page .content-area {
+  position: relative;
+  z-index: 1;
   padding: 24px;
+}
+
+.index-page .content-area::before,
+.clients-page .content-area::before,
+.inbounds-page .content-area::before,
+.xray-page .content-area::before,
+.settings-page .content-area::before,
+.nodes-page .content-area::before,
+.groups-page .content-area::before,
+.api-docs-page .content-area::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--ant-color-primary) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--ant-color-primary) 8%, transparent) 1px, transparent 1px);
+  background-size: 42px 42px;
+  -webkit-mask-image: radial-gradient(circle at 50% 0%, black, transparent 70%);
+  mask-image: radial-gradient(circle at 50% 0%, black, transparent 70%);
+  opacity: 0.48;
+  z-index: -1;
 }
 
 @media (max-width: 768px) {

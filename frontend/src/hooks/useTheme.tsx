@@ -29,50 +29,68 @@ const initialUltra = readBool(STORAGE_ULTRA, false);
 applyDom(initialDark, initialUltra);
 
 const DARK_TOKENS = {
-  colorBgBase: '#1a1b1f',
-  colorBgLayout: '#1a1b1f',
-  colorBgContainer: '#23252b',
-  colorBgElevated: '#2d2f37',
+  colorPrimary: '#7c3aed',
+  colorInfo: '#22d3ee',
+  colorSuccess: '#22c55e',
+  colorWarning: '#f59e0b',
+  colorError: '#f43f5e',
+  colorBgBase: '#0b1020',
+  colorBgLayout: '#0b1020',
+  colorBgContainer: '#12182a',
+  colorBgElevated: '#182033',
+  colorBorder: 'rgba(148, 163, 184, 0.18)',
+  colorBorderSecondary: 'rgba(148, 163, 184, 0.12)',
 };
 const ULTRA_DARK_TOKENS = {
-  colorBgBase: '#000',
-  colorBgLayout: '#000',
-  colorBgContainer: '#101013',
-  colorBgElevated: '#1a1a1e',
+  colorPrimary: '#8b5cf6',
+  colorInfo: '#22d3ee',
+  colorSuccess: '#22c55e',
+  colorWarning: '#f59e0b',
+  colorError: '#fb7185',
+  colorBgBase: '#030712',
+  colorBgLayout: '#030712',
+  colorBgContainer: '#080d1a',
+  colorBgElevated: '#0f172a',
+  colorBorder: 'rgba(148, 163, 184, 0.14)',
+  colorBorderSecondary: 'rgba(148, 163, 184, 0.08)',
 };
 const DARK_LAYOUT_TOKENS = {
-  bodyBg: '#1a1b1f',
-  headerBg: '#15161a',
+  bodyBg: '#0b1020',
+  headerBg: '#0f172a',
   headerColor: '#ffffff',
-  footerBg: '#1a1b1f',
-  siderBg: '#15161a',
-  triggerBg: '#23252b',
+  footerBg: '#0b1020',
+  siderBg: '#0a0f1f',
+  triggerBg: '#151b2e',
   triggerColor: '#ffffff',
 };
 const ULTRA_DARK_LAYOUT_TOKENS = {
-  bodyBg: '#000',
-  headerBg: '#050507',
+  bodyBg: '#030712',
+  headerBg: '#050816',
   headerColor: '#ffffff',
-  footerBg: '#000',
-  siderBg: '#050507',
-  triggerBg: '#1a1a1e',
+  footerBg: '#030712',
+  siderBg: '#030712',
+  triggerBg: '#111827',
   triggerColor: '#ffffff',
 };
 const DARK_MENU_TOKENS = {
-  darkItemBg: '#15161a',
-  darkSubMenuItemBg: '#1a1b1f',
-  darkPopupBg: '#23252b',
+  darkItemBg: '#0a0f1f',
+  darkSubMenuItemBg: '#111827',
+  darkPopupBg: '#182033',
+  darkItemSelectedBg: 'rgba(124, 58, 237, 0.22)',
+  darkItemSelectedColor: '#ffffff',
 };
 const ULTRA_DARK_MENU_TOKENS = {
-  darkItemBg: '#050507',
-  darkSubMenuItemBg: '#000',
-  darkPopupBg: '#101013',
+  darkItemBg: '#030712',
+  darkSubMenuItemBg: '#060a14',
+  darkPopupBg: '#0f172a',
+  darkItemSelectedBg: 'rgba(139, 92, 246, 0.24)',
+  darkItemSelectedColor: '#ffffff',
 };
 const DARK_CARD_TOKENS = {
-  colorBorderSecondary: 'rgba(255, 255, 255, 0.06)',
+  colorBorderSecondary: 'rgba(148, 163, 184, 0.14)',
 };
 const ULTRA_DARK_CARD_TOKENS = {
-  colorBorderSecondary: 'rgba(255, 255, 255, 0.04)',
+  colorBorderSecondary: 'rgba(148, 163, 184, 0.10)',
 };
 const STATISTIC_TOKENS = {
   contentFontSize: 17,
@@ -83,14 +101,34 @@ export function buildAntdThemeConfig(isDark: boolean, isUltra: boolean): ThemeCo
   if (!isDark) {
     return {
       algorithm: antdTheme.defaultAlgorithm,
+      token: {
+        colorPrimary: '#6d28d9',
+        colorInfo: '#0891b2',
+        colorSuccess: '#16a34a',
+        colorWarning: '#d97706',
+        colorError: '#e11d48',
+        colorBgLayout: '#eef2ff',
+        colorBgContainer: '#ffffff',
+        colorBgElevated: '#ffffff',
+        colorBorderSecondary: 'rgba(99, 102, 241, 0.14)',
+        borderRadius: 12,
+      },
       components: {
+        Layout: {
+          bodyBg: '#eef2ff',
+          siderBg: '#ffffff',
+          triggerBg: '#f8fafc',
+        },
         Statistic: STATISTIC_TOKENS,
       },
     };
   }
   return {
     algorithm: antdTheme.darkAlgorithm,
-    token: isUltra ? ULTRA_DARK_TOKENS : DARK_TOKENS,
+    token: {
+      borderRadius: 12,
+      ...(isUltra ? ULTRA_DARK_TOKENS : DARK_TOKENS),
+    },
     components: {
       Layout: isUltra ? ULTRA_DARK_LAYOUT_TOKENS : DARK_LAYOUT_TOKENS,
       Menu: isUltra ? ULTRA_DARK_MENU_TOKENS : DARK_MENU_TOKENS,
