@@ -32,7 +32,7 @@ panel to create, edit, disable, and delete VLESS or Trojan accounts and export
 their links or QR codes.
 
 For a complete fresh VPS, domain, panel, VLESS, and Trojan walkthrough, see
-[Fresh VPS, Domain, and Panel Setup](./docs/fresh-vps-domain-panel-setup.md).
+[SETUP.md](./SETUP.md).
 
 ## Publish Releases
 
